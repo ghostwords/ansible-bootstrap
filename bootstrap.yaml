@@ -1,0 +1,54 @@
+---
+- hosts: all
+  remote_user: root
+  handlers:
+    - name: Restart SSH
+      service: name=ssh state=restarted
+  vars_prompt:
+    - name: "password"
+      prompt: "Enter password for your admin user (for sudo)"
+      private: yes
+      encrypt: "sha512_crypt"
+      confirm: yes
+  tasks:
+    - local_action: command whoami
+      register: username
+      run_once: True
+
+    - name: Create admin user
+      user: name={{ username.stdout }} password={{ password }}
+        groups=adm,sudo,www-data shell=/bin/bash
+
+    - name: Add SSH authorized key
+      authorized_key:
+        user: "{{ username.stdout }}"
+        key: "{{ ssh_public_key }}"
+
+    - name: Remove existing SSH host keys
+      file: path=/etc/ssh/{{ item }} state=absent
+      with_items:
+        - ssh_host_dsa_key
+        - ssh_host_dsa_key.pub
+        - ssh_host_ecdsa_key
+        - ssh_host_ecdsa_key.pub
+        - ssh_host_ed25519_key
+        - ssh_host_ed25519_key.pub
+        - ssh_host_rsa_key
+        - ssh_host_rsa_key.pub
+
+    - name: Generate new SSH host keys
+      command: ssh-keygen -q -N "" {{ item.args }} -f {{ item.path }}
+        creates={{ item.path }}
+      with_items:
+        - { args: '-t ed25519', path: '/etc/ssh/ssh_host_ed25519_key' }
+        - { args: '-t rsa -b 4096', path: '/etc/ssh/ssh_host_rsa_key' }
+
+    - name: Copy SSH config
+      template:
+        src: templates/sshd_config.j2
+        dest: /etc/ssh/sshd_config
+      notify:
+        - Restart SSH
+
+    - name: Forget old SSH host key
+      local_action: command ssh-keygen -R {{ inventory_hostname }}

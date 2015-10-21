@@ -1,0 +1,18 @@
+---
+- hosts: all
+  become: True
+  tasks:
+    - name: Update and upgrade packages
+      apt: update_cache=yes cache_valid_time=3600 upgrade=dist
+
+    - name: Enable unattended security updates
+      lineinfile:
+        dest: /etc/apt/apt.conf.d/10periodic
+        regexp: "^{{ item.key }} "
+        line: '{{ item.key }} "{{ item.value }}";'
+        state: present
+      with_items:
+        - { key: "APT::Periodic::Update-Package-Lists", value: "1" }
+        - { key: "APT::Periodic::Download-Upgradeable-Packages", value: "1" }
+        - { key: "APT::Periodic::AutocleanInterval", value: "7" }
+        - { key: "APT::Periodic::Unattended-Upgrade", value: "1" }
