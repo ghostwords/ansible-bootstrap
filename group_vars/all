@@ -1,5 +1,5 @@
 ---
-ssh_public_key: "{{ lookup('file', '~/id_rsa.pub') }}"
+ssh_public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 sshd_port: 22
 swap_size: 1GB
 timezone: America/New_York
