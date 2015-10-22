@@ -1,6 +1,11 @@
 ---
 - hosts: all
   become: True
+  roles:
+    - role: kamaln7.swapfile
+      swapfile_size: 1GB
+      swapfile_swappiness: 10
+      swapfile_location: /swapfile
   tasks:
     - name: Update and upgrade packages
       apt: update_cache=yes cache_valid_time=3600 upgrade=dist
