@@ -21,3 +21,9 @@
         - { key: "APT::Periodic::Download-Upgradeable-Packages", value: "1" }
         - { key: "APT::Periodic::AutocleanInterval", value: "7" }
         - { key: "APT::Periodic::Unattended-Upgrade", value: "1" }
+
+    - name: Set timezone
+      command: timedatectl set-timezone {{ timezone }}
+
+    - name: Install NTP
+      apt: pkg=ntp state=installed
