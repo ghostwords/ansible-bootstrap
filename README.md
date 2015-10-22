@@ -1,4 +1,6 @@
-# Ansible (Ubuntu 14.04 on Digital Ocean) Bootstrap
+# Ansible Bootstrap
+
+Used with Ubuntu 14.04 on Digital Ocean. Uses git submodules; clone with `--recursive`.
 
 1. Populate [hosts](hosts) with server IP(s).
 
