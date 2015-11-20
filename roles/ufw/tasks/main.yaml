@@ -1,0 +1,22 @@
+---
+
+- name: Install ufw
+  apt: pkg=ufw state=present
+  tags:
+    - dependencies
+
+# port names are defined in /etc/services
+- name: Allow some TCP traffic
+  ufw: rule=allow to_port={{ item }} proto=tcp
+  with_items:
+    - http
+    - https
+    - "{{ sshd_port }}"
+    - smtp
+    - ssmtp
+
+- name: Allow DNS (TCP and UDP)
+  ufw: rule=allow to_port=domain
+
+- name: Enable UFW with deny by default policy
+  ufw: policy=deny state=enabled

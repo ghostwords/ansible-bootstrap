@@ -1,11 +1,15 @@
 ---
 - hosts: all
   become: True
+
   roles:
     - role: kamaln7.swapfile
       swapfile_size: 1GB
       swapfile_swappiness: 10
       swapfile_location: /swapfile
+
+    - ufw
+
   tasks:
     - name: Update and upgrade packages
       apt: update_cache=yes cache_valid_time=3600 upgrade=dist
@@ -26,4 +30,4 @@
       command: timedatectl set-timezone {{ timezone }}
 
     - name: Install NTP
-      apt: pkg=ntp state=installed
+      apt: pkg=ntp state=present
