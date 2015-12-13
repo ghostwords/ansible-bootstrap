@@ -19,4 +19,4 @@
   ufw: rule=allow to_port=domain
 
 - name: Enable UFW with deny by default policy
-  ufw: policy=deny state=enabled
+  ufw: logging=off policy=deny state=enabled
