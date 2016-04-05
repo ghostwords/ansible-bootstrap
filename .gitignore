@@ -1,2 +1,4 @@
-*.sw?
 Session.vim
+*.sw?
+
+hosts
